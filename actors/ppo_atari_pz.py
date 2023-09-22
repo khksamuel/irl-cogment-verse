@@ -1358,6 +1358,8 @@ class CycleBcFbPPOTraining(BasePPOTraining):
     fix memory leak
     fix actor count check
     implement skip button to skip current iteration and get to next iteration in a different mode
+    wrap the two stages into functions and call them in a loop
+    implement skip logic with try except block
     """
 
     async def sample_producer_impl(self, sample_producer_session: SampleProducerSession):
