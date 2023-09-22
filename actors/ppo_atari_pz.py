@@ -1348,7 +1348,17 @@ class HumanFeedbackPPOTraining(BasePPOTraining):
         iteration_info = await run_session.model_registry.store_model(name=model_id, model=serialized_model)
 
 class CycleBcFbPPOTraining(BasePPOTraining):
-    """Train PPO agent using human's actions and feedback"""
+    """Train PPO agent using human's actions and feedback
+    
+    Existing Issues:
+    memory leak after 120 trials on a 16GB machine
+    fails actor count check when switching between hill and feedback
+    
+    To Do:
+    fix memory leak
+    fix actor count check
+    implement skip button to skip current iteration and get to next iteration in a different mode
+    """
 
     async def sample_producer_impl(self, sample_producer_session: SampleProducerSession):
         """Collect sample from the trial"""
