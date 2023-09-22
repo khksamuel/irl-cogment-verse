@@ -142,6 +142,11 @@ Here are a few examples:
   $ python -m main +experiment=ppo_atari_pz/pong_pz
   ```
 
+  Example #6: Behaviour Cloning and human feedback in cycle
+  ```console
+  $ python -m main +experiment=ppo_atari_pz/bcfb_pong_pz
+  ```
+
   NOTE: Example 2&3 require users to open Chrome and navigate to http://localhost:8080 in order to provide either demonstrations or feedback.
 
 ## List of publications and submissions using Cogment and/or Cogment Verse
