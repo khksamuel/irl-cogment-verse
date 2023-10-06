@@ -8,6 +8,12 @@ defaults:
 
 run:
   class_name: actors.ppo_atari_pz.HumanFeedbackPPOTraining
+  players:
+    - name: player_1
+      implementation: client
+    - name: player_2
+      implementation: actors.overcooked_bc.SimpleBCActor
+
   seed: 3407
   num_epochs: 100
   num_iter: 3

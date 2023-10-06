@@ -1349,11 +1349,11 @@ class HumanFeedbackPPOTraining(BasePPOTraining):
 
 class CycleBcFbPPOTraining(BasePPOTraining):
     """Train PPO agent using human's actions and feedback
-    
+
     Existing Issues:
     memory leak after 120 trials on a 16GB machine
     fails actor count check when switching between hill and feedback
-    
+
     To Do:
     fix memory leak
     fix actor count check
@@ -1398,6 +1398,10 @@ class CycleBcFbPPOTraining(BasePPOTraining):
         async for sample in sample_producer_session.all_trial_samples():
             # Trail status
             trial_done = sample.trial_state == cogment.TrialState.ENDED
+
+            print(f"Sample {sample.tick_id} | Current player: {current_player_actor}")
+            print(f"Sample {sample.tick_id} | available actors: {list(sample.actors_data.keys())}")
+            print(f"Sample {sample.tick_id} | player actors: {sample_producer_session.player_actors} | teacher actors {sample_producer_session.teacher_actors} | observer actors {sample_producer_session.observer_actors}")
 
             observation = sample_producer_session.get_player_observations(
                 sample, current_player_actor)
