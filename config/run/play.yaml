@@ -6,7 +6,5 @@ players:
     implementation: client
   - name: player_2
     implementation: actors.overcooked_bc.SimpleBCActor
-    # agent_config:
-    #   model_id: silly_whitehat_0_model
-    #   model_iteration: -1
-    #   model_update_frequency: ~
+    agent_config: #starting checkpoint of training
+      model_id: gracious_ishizaka_0_model

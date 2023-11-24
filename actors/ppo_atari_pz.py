@@ -44,6 +44,8 @@ from cogment_verse.specs import (
     SampleProducerSession,
     WEB_ACTOR_NAME,
 )
+from cogment_verse.experiment_tracker.mlflow_experiment_tracker import MlflowExperimentTracker
+
 
 torch.multiprocessing.set_sharing_strategy("file_system")
 
@@ -89,6 +91,8 @@ class PolicyValueNetwork(torch.nn.Module):
         )
         self.actor = initialize_layer(
             torch.nn.Linear(512, num_actions), std=0.01)
+        # print the features of the last layer with 512 neurons 
+        print(self.actor.weight)
         self.value = initialize_layer(torch.nn.Linear(512, 1), std=1)
 
     def get_value(self, observation: torch.Tensor) -> torch.Tensor:
@@ -1103,7 +1107,7 @@ class HumanFeedbackPPOTraining(BasePPOTraining):
             if trial_done:
                 episode_rewards.append(torch.tensor(
                     total_reward / num_players, dtype=self._dtype))
-                total_reward = 0
+                total_reward = 0          
 
             # Produce sample for training task
             if (step % self._cfg.num_rollout_steps == 0 or trial_done) and not wait_for_feedback:
@@ -1143,6 +1147,8 @@ class HumanFeedbackPPOTraining(BasePPOTraining):
                 log_probs = []
                 human_eval_scores = []
             if trial_done:
+                print(f"Steps: #{total_steps} | Avg. reward: {avg_rewards.item():.2f}")
+                        
                 break
 
     async def impl(self, run_session: RunSession) -> dict:
@@ -1271,11 +1277,12 @@ class HumanFeedbackPPOTraining(BasePPOTraining):
                 sample_producer_impl=self.sample_producer_impl,
                 num_parallel_trials=self._cfg.num_parallel_trials,
             ):
+                print("start sample")
                 # Collect the rollout
                 (trial_obs, trial_act, trial_adv, trial_val,
                  trial_log_prob, trial_hb, _, trial_eps_rew) = sample
                 episode_rewards.extend(trial_eps_rew)
-
+                
                 # Save data to replay buffer
                 if trial_act is not None:
                     replay_buffer.add_multi_samples(
@@ -1290,9 +1297,9 @@ class HumanFeedbackPPOTraining(BasePPOTraining):
                     )
 
                 # Training
-                if (
-                    replay_buffer.size() >= self._cfg.epoch_num_trials * self._cfg.num_rollout_steps
-                    and step_idx % self._cfg.update_freq == 0
+                if ( True
+                    # replay_buffer.size() >= self._cfg.epoch_num_trials * self._cfg.num_rollout_steps
+                    # and step_idx % self._cfg.update_freq == 0
                 ):
                     # Get sample
                     data = replay_buffer.sample(
@@ -1684,6 +1691,7 @@ class CycleBcFbPPOTraining(BasePPOTraining):
                             num_steps=total_steps,
                             num_updates=num_updates,
                         )
+                        print(f"Steps: #{total_steps} | Avg. reward: {avg_rewards.item():.2f}")
                         # Publish the newly updated model
                         self.model.iter_idx = iter_idx
                         serialized_model = PPOModel.serialize_model(self.model)
@@ -1700,7 +1708,7 @@ class CycleBcFbPPOTraining(BasePPOTraining):
                 if total_steps > self._cfg.max_training_steps:
                     break
                 iteration_info = await run_session.model_registry.store_model(name=model_id, model=serialized_model)
-
+                        
             print("switch to hill training mode")
 
             run_session.log_params(

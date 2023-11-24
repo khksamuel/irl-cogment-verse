@@ -63,6 +63,12 @@ class SimpleExperimentTracker:
                 f"[{self._experiment_id}/{self._run_id}] log metrics at step #{step_idx} [{json.dumps(metrics_dict)}]"
             )
 
+    def print_metrics(self, step_timestamp, step_idx, **kwargs):
+        metrics_dict = make_dict(True, **kwargs)
+        log.info(
+            f"[{self._experiment_id}/{self._run_id}] print metrics at step #{step_idx} [{json.dumps(metrics_dict)}]"
+        )
+
     def terminate_failure(self):
         pass
 
