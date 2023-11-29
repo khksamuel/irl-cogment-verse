@@ -1,8 +1,19 @@
+"""A standalone script that add gaussian noise to the model in the model registry without using the cogment api that requires a runsession
+"""
+import os
 import argparse
 import torch
-import os
 
 def get_latest_name(model_registry: str, model_id: str) -> str:
+    """get the latest version of the model in a model registry folder
+
+    Args:
+        model_registry (str): path to the the model registry
+        model_id (str): the id(name) of the model
+
+    Returns:
+        str: the latest name of the model in the format: {model_id}-v{version_number}.data
+    """
     model_dir = os.path.join(model_registry, model_id)
     yaml_files = [f for f in os.listdir(model_dir) if f.endswith('.data')]
 
@@ -93,10 +104,16 @@ def gaussian_filter(genotype_id, model_registry, mean=0., std=0.1, overwrite=Fal
         update_model(genotype_id, model_registry, model)
     else:
         append_model(genotype_id, model_registry, model)
-        
+
     return model
 
 def compare_models(old_model, new_model):
+    """compare two models and print the difference between them (should be different)
+
+    Args:
+        old_model (torch.nn.Module): the old model
+        new_model (torch.nn.Module): the new model
+    """
     for (old_key, old_param), (new_key, new_param) in zip(old_model[0].items(), new_model[0].items()):
         if old_key == new_key:
             print(f"Difference in {old_key}: {torch.sum(old_param - new_param)}")
@@ -110,6 +127,7 @@ if __name__ == "__main__":
     parser.add_argument("--overwrite", type=bool, default=False)
     args = parser.parse_args()
     old_model = get_model(args.model_id, args.model_registry)
+    print(type(old_model), old_model)
     new_model = gaussian_filter(args.model_id, args.model_registry,
                     args.mean, args.std, args.overwrite)
     compare_models(old_model, new_model)

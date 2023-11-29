@@ -9,7 +9,7 @@ run:
   class_name: runs.play.PlayRun
   agent_class: RandomActor
   observer: False
-  num_trials: 50
+  num_trials: 1
   seed: 12
   players:
     - name: player_1

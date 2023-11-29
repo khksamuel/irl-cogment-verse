@@ -360,8 +360,13 @@ class SimpleBCTraining:
             loss.backward()
             optimizer.step()
 
+            torch.save(model.policy_network.state_dict(), f"../neuro_evo/models/{model_id}.pth")
+            torch.save(model, f"../neuro_evo/models/{model_id}.data")
             # Publish the newly trained version every 100 steps
             if step_idx % 100 == 0:
+
+                # store the models as pth and data files for neuro evolution
+
                 serialized_model = SimpleBCModel.serialize_model(model)
                 iteration_info = await run_session.model_registry.store_model(
                     name=model_id,
